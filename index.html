@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ランダム単語メイカー</title>
+<style>
+body {
+  font-family: sans-serif;
+}
+
+.k {
+  font-size: 24px;
+  margin: 10px 0;
+}
+
+.log {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 5px;
+}
+
+.log li {
+  font-size: 14px;
+  border-bottom: 1px solid #eee;
+}
+
+button {
+  margin: 5px;
+  padding: 8px 15px;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+</style>
+</head>
+<body>
+
+<h1>ランダム単語メイカー</h1>
+
+<button class="b">作る！</button>
+<button class="share">Xに投稿</button>
+<button class="clear">ログ削除</button>
+
+<p>結果</p>
+<p class="k">読み込み中...</p>
+
+<h3>ログ</h3>
+<ul class="log"></ul>
+
+<script>
+let text = document.querySelector(".k");
+let btn = document.querySelector(".b");
+let shareBtn = document.querySelector(".share");
+let clearBtn = document.querySelector(".clear");
+let log = document.querySelector(".log");
+
+let modifiers = ["可愛い","かっこいい","動かない","失われし","全てを喰らいし","夢見る","黒色の","青眼の","紅き","紅に染まった","飛べない","空を舞う","囚われし","呪われし","満たされし","打ち砕かれし","燃えさかる","暗き","深淵の","見えざる","虚像の","ふつうの","混沌とした","黒鉄の","魔女の","ハイウェイの","隻眼の","100万ドルの","繰り返す","ハロウィンの","緋色の","夏が消し去った","白い肌の","夏が消し去った白い肌の","儚い","可愛げのない","蝉の","キュートな","吾輩の","甘い","神がかった","誰かの","みんなの","弱くなった","隣の","からかい上手の","踊り狂う","友達の","あったかい"];
+
+let nouns = ["豚","ペンギン","魔王","太郎","人間","人参","水","氷","犬","猫","鷹","虎","バッタ","そうめん","手","白龍","乙女","姫","騎士","王","皇帝","社会","現実","夢","狙撃手","魚影","堕天使","残像","フラッシュバック","みちしるべ","五稜星","花嫁","弾丸","少女","世界の彼方","宅急便","トメィトゥ","ガキ","時計","声","彼女","初恋","嘘","愛","カニ","神","Twitter","チョコレイト","カツ丼","ショットガン","無秩序","夏","タルタルソース"];
+
+// JSON読み込み
+fetch("ランダム単語メイカー.json")
+  .then(res => res.json())
+  .then(data => {
+    modifiers = data.modifiers;
+    nouns = data.nouns;
+    text.innerText = "準備OK！";
+  })
+  .catch(() => {
+    text.innerText = "";
+  });
+
+// ログ保存用
+let logs = [];
+
+function saveLogs(){
+  localStorage.setItem("logs", JSON.stringify(logs));
+}
+
+function loadLogs(){
+  let saved = localStorage.getItem("logs");
+  if(saved){
+    logs = JSON.parse(saved);
+    logs.forEach(item => addLogToDOM(item));
+  }
+}
+
+function addLogToDOM(textData){
+  let li = document.createElement("li");
+  li.textContent = textData;
+  log.appendChild(li);
+}
+
+function addLog(result){
+  let now = new Date();
+  let time = now.toLocaleTimeString();
+  let textData = `[${time}] ${result}`;
+
+  logs.push(textData);
+  saveLogs();
+  addLogToDOM(textData);
+}
+
+// 生成
+btn.addEventListener("click", function(){
+  let m = modifiers[Math.floor(Math.random() * modifiers.length)];
+  let n = nouns[Math.floor(Math.random() * nouns.length)];
+
+  let result = m + n;
+
+  text.innerText = result;
+  addLog(result);
+});
+
+// X投稿
+shareBtn.addEventListener("click", function(){
+  let result = text.innerText;
+
+  let url = "https://twitter.com/intent/tweet?text=" 
+    + encodeURIComponent(result + " #ランダム単語メイカー");
+
+  window.open(url, "_blank");
+});
+
+// ログ削除
+clearBtn.addEventListener("click", function(){
+  logs = [];
+  saveLogs();
+  log.innerHTML = "";
+});
+
+// 初期読み込み
+loadLogs();
+</script>
+
+</body>
+</html>
