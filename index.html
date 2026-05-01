@@ -38,7 +38,7 @@ button:active {
 <body>
 
 <h1>ランダム単語メイカー</h1>
-<h3>v.1.01　更新日2026/5/2</h3>
+<h3>v.1.02　更新日2026/5/2</h3>
   
 <button class="b">作る！</button>
 <button class="share">Xに投稿</button>
@@ -121,7 +121,7 @@ shareBtn.addEventListener("click", function(){
   let result = text.innerText;
 
   let url = "https://twitter.com/intent/tweet?text=" 
-    + encodeURIComponent(result + "https://kyouonn.github.io/randamumeke/" + " #ランダム単語メイカー");
+    + encodeURIComponent(result + "\n" + "https://kyouonn.github.io/randamumeke/" + "\n" + " #ランダム単語メイカー");
 
   window.open(url, "_blank");
 });
